@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-0lfjg1=%=5569q2v8vcw8$x^@#b+^%lkc=dw$yv=g)!5g-#-$t
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,11 +39,28 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'rest_framework',
-    'drf_yasg'
+    'drf_yasg',
+    'oauth2_provider',
 ]
 
 CKEDITOR_UPLOAD_PATH = "ckeditor/courses/"
 
+import cloudinary
+
+cloudinary.config(
+    cloud_name="dy1unykph",
+    api_key="238791983534257",
+    api_secret="_J2MkfDJ1DwRe1uAn5TKozXup0U"
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    )
+}
+
+CLIENT_ID = "sqnAUbfnvWwQC2gl9ONG7CptH3a9pWmTaQI0BMlU"
+CLIENT_SECRET = "rzdg0q0wNvrS2XftZxGVKip0Nax4UgXYsvW6fJVLOqMsTWJYX9jQQg0ujgkluj9ISIfaeCBoCpjEj2CV36m6uqHdd2Rcb9cb5EXq4moDIUr1gXRdiZFRzEONUc3N8dHq"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,6 +94,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecourse.wsgi.application'
 
 import pymysql
+
 pymysql.install_as_MySQLdb()
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -92,7 +108,6 @@ DATABASES = {
         'HOST': ''
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -112,7 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -123,7 +137,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

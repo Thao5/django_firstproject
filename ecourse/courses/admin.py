@@ -1,16 +1,16 @@
 from django.contrib import admin
 from django.template.response import TemplateResponse
+from django.urls import path
 from django.utils.safestring import mark_safe
 from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from .models import Category, Course, User, Tag
-from django.urls import path
-from .dao import count_course_by_cate
+from .models import Category, Course, Lesson, Tag, User
+from .dao import count_course_by_cat
+
+
 # Register your models here.
-
-
 class CourseAppAdminSite(admin.AdminSite):
-    site_header = 'Hệ thống khoá học trực tuyến'
+    site_header = "HỆ THỐNG KHÓA HỌC TRỰC TUYẾN"
 
     def get_urls(self):
         return [
@@ -18,22 +18,32 @@ class CourseAppAdminSite(admin.AdminSite):
                ] + super().get_urls()
 
     def stats_view(self, request):
-        stat = count_course_by_cate()
-        return TemplateResponse(request,
-                                'admin/course-stats.html', {'stat':stat})
-
-
-admin_site = CourseAppAdminSite(name='myadmin')
+        stats = count_course_by_cat()
+        return TemplateResponse(request, 'admin/stats_view.html',context={
+            'stats': stats
+        })
 
 
 class CourseTagInlineAdmin(admin.TabularInline):
     model = Course.tags.through
+
+
+class LessonTagInlineAdmin(admin.TabularInline):
+    model = Lesson.tags.through
 
 class CourseForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorUploadingWidget)
 
     class Meta:
         model = Course
+        fields = '__all__'
+
+
+class LessonForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorUploadingWidget)
+
+    class Meta:
+        model = Lesson
         fields = '__all__'
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -62,7 +72,24 @@ class CourseAdmin(admin.ModelAdmin):
         }
 
 
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ['id', 'subject', 'description']
+    search_fields = ['subject']
+    list_filter = ['id', 'subject']
+    readonly_fields = ['ava']
+    form = CourseForm
+    inlines = [LessonTagInlineAdmin]
+    def ava(self, obj):
+        if obj:
+            return mark_safe(
+                '<img src="/static/{url}" width="120" />' \
+                    .format(url=obj.image.name)
+            )
+
+admin_site = CourseAppAdminSite(name="myapp")
+
 admin_site.register(Category, CategoryAdmin)
 admin_site.register(Course, CourseAdmin)
 admin_site.register(User)
 admin_site.register(Tag)
+admin_site.register(Lesson, LessonAdmin)
